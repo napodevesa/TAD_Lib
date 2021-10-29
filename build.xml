@@ -1,0 +1,105 @@
+﻿<?xml version="1.0"?>
+<project name="LibreriaDeTads" default="all">
+    
+	<description>
+            Librería de TADS de Estructura de la Información
+    </description>
+	
+	<taskdef name="junit"
+			 classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+	
+	<property file="build.properties"/>
+	
+	
+	<path id="test.classpath">
+		<pathelement location="out/tads/classes"/>
+		<pathelement location="out/test/classes"/>
+		<pathelement location="lib/junit-4.1.jar"/>
+		<pathelement location="lib/ant-junit.jar"/>
+		<pathelement location="lib/log4j-1.2.13.jar"/>
+	</path>
+
+	<target name="clean">
+		<delete dir="out"/>
+    	<delete dir="dist"/>
+    	<mkdir dir="out"/>
+    	<mkdir dir="dist"/>
+    </target>
+
+	
+	<!-- TADs tasks -->
+	
+    <target name="tads-compile" depends="clean">
+    	<mkdir dir="out/tads/classes"/>
+      <javac encoding="ISO-8859-15" srcdir="src/main" compiler="javac1.5" debug="yes" destdir="out/tads/classes"/>
+    </target>
+	
+	
+    <target name="tads-jar" depends="tads-compile">
+    	  <jar destfile="dist/tads.jar" basedir="out/tads/classes"/>
+    </target>
+	
+	
+	<target name="tads-test" depends="tads-compile,test-compile">
+		<junit printsummary="yes" showoutput="yes" fork="yes" haltonfailure="yes">
+		  <formatter type="plain" usefile="false"/>
+		  <test name="uoc.ei.tads.tests.TestSuiteLibreriaTADs"/>
+		  <classpath refid="test.classpath" />
+		</junit>
+	</target>
+	
+	
+    <target name="tads-javadoc">
+    	<mkdir dir="out/tads/javadoc"/>
+      <javadoc locale="ca_ES" encoding="ISO-8859-15" destdir="out/tads/javadoc"
+            access="protected" use="true" notree="false" nonavbar="false"
+            noindex="false" splitindex="false" author="true"
+            version="true" nodeprecatedlist="false" nodeprecated="false"
+            packagenames="uoc.ei.tads.*" sourcepath="src/main"
+            windowtitle=" UOC. ESTRUCTURA DE LA INFORMACION"
+            doctitle="UOC. Estructura de la Información;Biblioteca de Tipos Abstractos de Datos"
+            header="&#60;strong&#62;TADs&#60;/strong&#62;">
+         <tag name="pre" scope="all" description="Precondition:"/>
+         <tag name="inv" scope="all" description="Invariant:"/>
+         <tag name="post" scope="all" description="Postcondition:"/>
+         <link href="http://java.sun.com/j2se/1.5/docs/api/"/>
+        </javadoc>
+    	<zip basedir="out/tads/javadoc" destfile="dist/tads-javadoc.zip"/>
+    </target>
+	
+	
+	<!-- test tasks -->
+	
+	<target name="test-compile" depends="tads-compile,clean">
+    	<mkdir dir="out/test/classes"/>
+      <javac encoding="ISO-8859-15" srcdir="src/test" compiler="javac1.5" debug="yes" destdir="out/test/classes">
+    		<classpath refid="test.classpath"/>
+    	</javac>
+	</target>
+		
+	
+	
+	<!-- examples tasks -->
+	
+	<target name="examples-compile" depends="tads-compile,clean">
+    	<mkdir dir="out/examples/classes"/>
+      <javac encoding="ISO-8859-15" srcdir="src/examples" compiler="javac1.5" debug="yes" destdir="out/examples/classes">
+    		<classpath refid="test.classpath"/>
+    	</javac>
+	</target>
+		
+	
+	
+	<target name="examples-source-dist" depends="examples-compile">
+		<zip basedir="src/examples" destfile="dist/examples-src.zip"/>
+	</target>
+
+	
+	<!-- complete build process -->
+	
+	<target name="all" depends="tads-test,tads-jar,tads-javadoc,examples-source-dist"/>
+	
+	
+
+</project>
+
